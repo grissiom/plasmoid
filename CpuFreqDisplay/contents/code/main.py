@@ -34,6 +34,7 @@ class CpuFreqDisplay(plasmascript.Applet):
 		self.timer.start(1000)
 
 	def update_freq(self):
+		# FIXME: this may cause buffer overflow, but I don't know how to fix yet...
 		f = sp.Popen(["cat", "/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq"],
 				close_fds = True, stdout = sp.PIPE).stdout
 		self.cfreq = int(f.readlines()[0])
