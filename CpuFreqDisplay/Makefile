@@ -1,9 +1,14 @@
+.PHONY:all uninstall
 
-all: uninstall zipfile
-	plasmapkg -i ../CpuFreqDisplay.zip
+PRONAME=CpuFreqDisplay
+
+all: install
+
+install: ${PRONAME}.zip
+	plasmapkg -i ${PRONAME}.zip
 
 uninstall:
-	plasmapkg -r CpuFreqDisplay
+	plasmapkg -r ${PRONAME}
 
-zipfile:metadata.desktop contents/code/main.py
-	zip -r ../CpuFreqDisplay.zip . -x *~ contents/code/main.py~ .*
+CpuFreqDisplay.zip: metadata.desktop contents/code/main.py
+	zip -r ${PRONAME}.zip . -x *~ contents/code/main.py~ .* ${PRONAME}.zip
