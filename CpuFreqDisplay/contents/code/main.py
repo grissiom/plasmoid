@@ -27,6 +27,7 @@ class CpuFreqDisplay(plasmascript.Applet):
 		afreq = f.readlines()[0].split(' ')[:-1]# the last byte is '\n'
 		self.afreq = map(int, afreq)
 		self.afreq.sort()
+		self.cfreq = 0
 		self.update_freq()
 
 		self.timer = QTimer(self)
@@ -37,7 +38,10 @@ class CpuFreqDisplay(plasmascript.Applet):
 		# FIXME: this may cause buffer overflow, but I don't know how to fix yet...
 		f = sp.Popen(["cat", "/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq"],
 				close_fds = True, stdout = sp.PIPE).stdout
-		self.cfreq = int(f.readlines()[0])
+		cfreq = int(f.readlines()[0])
+		if self.cfreq != cfreq:
+			self.update()
+		self.cfreq = cfreq
 
 	def paintInterface(self, p, option, rect):
 		p.save()
