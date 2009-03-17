@@ -33,17 +33,18 @@ class CpuFreqDisplay(plasmascript.Applet):
 		self.cfreq = 0
 		self.update_freq()
 
-		self.timer = QTimer(self)
-		self.connect(self.timer, SIGNAL('timeout()'), self.update_freq)
-		self.timer.start(1000)
+		self.startTimer(1000)
 
 	def update_freq(self):
 		f = open("/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq", 'rb')
 		cfreq = int(f.read().strip())
 		f.close()
 		if self.cfreq != cfreq:
+			self.cfreq = cfreq
 			self.update()
-		self.cfreq = cfreq
+
+	def timerEvent(self, event):
+		self.update_freq()
 
 	def paintInterface(self, p, option, rect):
 		p.save()
