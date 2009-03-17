@@ -4,7 +4,8 @@
 # license. It noly goal is to display CPU frequency. If you want to do CPU
 # scaling, try PowerDevil.
 
-import subprocess as sp
+# Thanks to:
+# wd <wd@wdicc.com> for sharing his/her script that teach me to use file object.
 
 from PyQt4.QtCore import QTimer, Qt, SIGNAL
 #from PyQt4.QtGui import QFont
@@ -20,11 +21,13 @@ class CpuFreqDisplay(plasmascript.Applet):
 		self.setHasConfigurationInterface(False)
 		self.setAspectRatioMode(Plasma.IgnoreAspectRatio)
 
-		# from plasmaengineexplorer, solidservice seems not working on my box.
-		# FIXME: What if the box is signal cored or cores with different frequency?
-		f = sp.Popen(["cat", "/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies"],
-				close_fds = True, stdout = sp.PIPE).stdout
-		afreq = f.readlines()[0].split(' ')[:-1]# the last byte is '\n'
+		# from plasmaengineexplorer, solidservice seems not working on
+		# my box. So I cannot use DataEngin here...
+		# signal cored machine will have /sys/devices/system/cpu/cpu0/ too.
+		# FIXME: What if the box have cores with different frequency?
+		f = open("/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies", 'rb')
+		afreq = f.read().strip().split(' ')
+		f.close()
 		self.afreq = map(int, afreq)
 		self.afreq.sort()
 		self.cfreq = 0
@@ -35,10 +38,9 @@ class CpuFreqDisplay(plasmascript.Applet):
 		self.timer.start(1000)
 
 	def update_freq(self):
-		# FIXME: this may cause buffer overflow, but I don't know how to fix yet...
-		f = sp.Popen(["cat", "/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq"],
-				close_fds = True, stdout = sp.PIPE).stdout
-		cfreq = int(f.readlines()[0])
+		f = open("/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq", 'rb')
+		cfreq = int(f.read().strip())
+		f.close()
 		if self.cfreq != cfreq:
 			self.update()
 		self.cfreq = cfreq
