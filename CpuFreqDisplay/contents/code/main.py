@@ -47,9 +47,9 @@ class CpuFreqDisplay(plasmascript.Applet):
 		else:
 			self.color = Qt.yellow
 		if self.cfreq > 1000000:
-			text = "%dGHz" % (self.cfreq / 1000000.0)
+			text = "%.2fGHz" % (self.cfreq / 1000000.0)
 		else:
-			text = "%dMHz" % (self.cfreq / 1000.0)
+			text = "%.2fMHz" % (self.cfreq / 1000.0)
 
 		# TODO:optimization should goes here
 		font = p.font()
