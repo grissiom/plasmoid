@@ -8,8 +8,8 @@
 # wd <wd@wdicc.com> for sharing his/her script that teach me to use file object.
 # Wang Hoi <zealot.hoi@gmail.com> for teaching me getting font from Plasma.font()
 
-from PyQt4.QtCore import QTimer, Qt, SIGNAL
-#from PyQt4.QtGui import QFont
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QFontMetrics
 
 from PyKDE4.plasma import Plasma
 from PyKDE4 import plasmascript
@@ -23,8 +23,7 @@ class CpuFreqDisplay(plasmascript.Applet):
 		self.setAspectRatioMode(Plasma.IgnoreAspectRatio)
 
 		self.ft = self.font()
-		# set to a reasonable pixelSize here so we have less loop
-		# later.
+		# set to a reasonable pixelSize
 		self.ft.setPixelSize(30)
 
 		# from plasmaengineexplorer, solidservice seems not working on
@@ -65,22 +64,14 @@ class CpuFreqDisplay(plasmascript.Applet):
 		else:
 			text = "%.2fMHz" % (self.cfreq / 1000.0)
 
-		# TODO: need optimization
-		ps = self.ft.pixelSize()
 		p.setFont(self.ft)
-		while p.boundingRect(rect, Qt.AlignTop | Qt.AlignLeft, text).width() < rect.width() and\
-		      p.boundingRect(rect, Qt.AlignTop | Qt.AlignLeft, text).height() < rect.height():
-			ps += 1
-			self.ft.setPixelSize(ps)
-			p.setFont(self.ft)
-		while p.boundingRect(rect, Qt.AlignTop | Qt.AlignLeft, text).width() > rect.width() or\
-		      p.boundingRect(rect, Qt.AlignTop | Qt.AlignLeft, text).height() > rect.height():
-			ps -= 1
-			self.ft.setPixelSize(ps)
-			p.setFont(self.ft)
-
+		p.translate(rect.x(), rect.y())
+		p.scale(float(rect.width())  / p.boundingRect(rect, Qt.AlignTop | Qt.AlignLeft, text).width(),
+			float(rect.height()) / p.boundingRect(rect, Qt.AlignTop | Qt.AlignLeft, text).height())
 		p.setPen(self.color)
-		p.drawText(rect, Qt.AlignTop | Qt.AlignLeft,  text)
+		# from the doc: The y-position is used as the baseline of the font.
+		y = QFontMetrics(self.ft).ascent()
+		p.drawText(0, y,  text)
 		p.restore()
 
 def CreateApplet(p):
