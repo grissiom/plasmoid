@@ -1,8 +1,10 @@
-.PHONY:all install uninstall reinstall view
+.PHONY:all install uninstall reinstall view tarball
 
 PRONAME=CpuFreqDisplay
 
 all: install
+reinstall: uninstall install
+tarball: $(PRONAME).zip
 
 install: ${PRONAME}.zip
 	plasmapkg -i ${PRONAME}.zip
@@ -10,9 +12,8 @@ install: ${PRONAME}.zip
 uninstall:
 	plasmapkg -r ${PRONAME}
 
-reinstall: uninstall install
 
-CpuFreqDisplay.zip: metadata.desktop contents/code/main.py
+$(PRONAME).zip: metadata.desktop contents/code/main.py
 	zip -r ${PRONAME}.zip . -x *~ contents/code/main.py~ .* ${PRONAME}.zip
 
 view:
