@@ -8,8 +8,8 @@
 # wd <wd@wdicc.com> for sharing his/her script that teach me to use file object.
 # Wang Hoi <zealot.hoi@gmail.com> for teaching me getting font from Plasma.font()
 
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QFontMetrics
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 
 from PyKDE4.plasma import Plasma
 from PyKDE4 import plasmascript
@@ -23,8 +23,9 @@ class CpuFreqDisplay(plasmascript.Applet):
 		self.setAspectRatioMode(Plasma.IgnoreAspectRatio)
 
 		self.ft = self.font()
-		# set to a reasonable pixelSize
 		self.ft.setPixelSize(30)
+                self.width = 0
+                self.height = 0
 
 		# from plasmaengineexplorer, solidservice seems not working on
 		# my box. So I cannot use DataEngin here...
@@ -37,6 +38,7 @@ class CpuFreqDisplay(plasmascript.Applet):
 		self.afreq.sort()
 		self.cfreq = 0
 		self.update_freq()
+		self.resize(150, 25)
 
 		self.startTimer(1000)
 
@@ -46,6 +48,16 @@ class CpuFreqDisplay(plasmascript.Applet):
 		f.close()
 		if self.cfreq != cfreq:
 			self.cfreq = cfreq
+                        if self.cfreq == self.afreq[0]:
+                                self.color = Qt.green
+                        elif self.cfreq == self.afreq[-1]:
+                                self.color = Qt.red
+                        else:
+                                self.color = Qt.yellow
+                        if self.cfreq > 1000000:
+                                self.text = "%.2fGHz" % (self.cfreq / 1000000.0)
+                        else:
+                                self.text = "%.2fMHz" % (self.cfreq / 1000.0)
 			self.update()
 
 	def timerEvent(self, event):
@@ -53,26 +65,31 @@ class CpuFreqDisplay(plasmascript.Applet):
 
 	def paintInterface(self, p, option, rect):
 		p.save()
-		if self.cfreq == self.afreq[0]:
-			self.color = Qt.green
-		elif self.cfreq == self.afreq[-1]:
-			self.color = Qt.red
-		else:
-			self.color = Qt.yellow
-		if self.cfreq > 1000000:
-			text = "%.2fGHz" % (self.cfreq / 1000000.0)
-		else:
-			text = "%.2fMHz" % (self.cfreq / 1000.0)
-
+                if self.width != rect.width() or self.height != rect.height():
+                        self.update_font(rect.width(), rect.height())
+                        self.width, self.height = rect.width(), rect.height()
 		p.setFont(self.ft)
-		p.translate(rect.x(), rect.y())
-		p.scale(float(rect.width())  / p.boundingRect(rect, Qt.AlignTop | Qt.AlignLeft, text).width(),
-			float(rect.height()) / p.boundingRect(rect, Qt.AlignTop | Qt.AlignLeft, text).height())
 		p.setPen(self.color)
-		# from the doc: The y-position is used as the baseline of the font.
-		y = QFontMetrics(self.ft).ascent()
-		p.drawText(0, y,  text)
+		p.drawText(rect, Qt.AlignHCenter, self.text)
 		p.restore()
+
+        #def constraintsEvent(self, con):
+        #        if con & (Plasma.SizeConstraint | Plasma.StartupCompletedConstraint):
+
+        def update_font(self, w, h):
+                print 'qwer', 'w', w, 'h', h
+                print self.size().width(), self.size().height()
+                print self.boundingRect().width(), self.boundingRect().height()
+                print self.applet.size().width()
+                br = QFontMetrics(self.ft).boundingRect(QString(self.text))
+                while br.width() < w and br.height() < h:
+                        self.ft.setPixelSize(self.ft.pixelSize() + 1)
+                        print self.ft.pixelSize()
+                        br = QFontMetrics(self.ft).boundingRect(QString(self.text))
+                while br.width() > w or br.height() > h:
+                        self.ft.setPixelSize(self.ft.pixelSize() - 1)
+                        print self.ft.pixelSize()
+                        br = QFontMetrics(self.ft).boundingRect(QString(self.text))
 
 def CreateApplet(p):
 	return CpuFreqDisplay(p)
