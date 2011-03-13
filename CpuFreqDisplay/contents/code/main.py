@@ -85,7 +85,6 @@ class CpuFreqDisplay(plasmascript.Applet):
 			while br.width() >= w and self.ft.pixelSize() >= 2:
 				self.ft.setPixelSize(self.ft.pixelSize() - 1)
 				br = QFontMetrics(self.ft).boundingRect(QString(self.text))
-			print 'pixelsize', self.ft.pixelSize()
 			self.setMinimumHeight(br.height() + self.size().height() - h)
 			self.setMaximumHeight(br.height() + self.size().height() - h)
 			self.setMinimumWidth(self.size().width() - w + 8)
@@ -98,7 +97,6 @@ class CpuFreqDisplay(plasmascript.Applet):
 			while br.height() >= h and self.ft.pixelSize() >= 2:
 				self.ft.setPixelSize(self.ft.pixelSize() - 1)
 				br = QFontMetrics(self.ft).boundingRect(QString(self.text))
-			print 'pixelsize', self.ft.pixelSize()
 			self.setMinimumWidth(br.width() + self.size().width() - w)
 			self.setMaximumWidth(br.width() + self.size().width() - w)
 			self.setMinimumHeight(self.size().height() - h + 8)
@@ -112,7 +110,6 @@ class CpuFreqDisplay(plasmascript.Applet):
 			while self.ft.pixelSize() >= 2 and (br.width() > w or br.height() > h):
 				self.ft.setPixelSize(self.ft.pixelSize() - 1)
 				br = QFontMetrics(self.ft).boundingRect(QString(self.text))
-			print 'pixelsize', self.ft.pixelSize()
 			self.setMinimumSize(self.size().width() - w + 8, self.size().height() - h + 8)
 			self.setMaximumSize(16777215, 16777215)
 
