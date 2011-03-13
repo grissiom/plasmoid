@@ -54,10 +54,10 @@ class CpuFreqDisplay(plasmascript.Applet):
 				self.color = Qt.red
 			else:
 				self.color = Qt.yellow
-			if self.cfreq > 1000000:
+			if self.cfreq > 1100000:
 				self.text = "%.2fGHz" % (self.cfreq / 1000000.0)
 			else:
-				self.text = "%.2fMHz" % (self.cfreq / 1000.0)
+				self.text = "%dMHz" % (self.cfreq / 1000)
 			self.update()
 
 	def timerEvent(self, event):
