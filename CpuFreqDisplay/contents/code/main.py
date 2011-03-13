@@ -77,14 +77,44 @@ class CpuFreqDisplay(plasmascript.Applet):
 	#        if con & (Plasma.SizeConstraint | Plasma.StartupCompletedConstraint):
 
 	def update_font(self, w, h):
-		br = QFontMetrics(self.ft).boundingRect(QString(self.text))
-		self.ft.setPixelSize(1)
-		while br.width() < w and br.height() < h:
-			self.ft.setPixelSize(self.ft.pixelSize() + 1)
+		if self.formFactor() == Plasma.Vertical:
 			br = QFontMetrics(self.ft).boundingRect(QString(self.text))
-		while self.ft.pixelSize() >= 2 and br.width() > w or br.height() > h:
-			self.ft.setPixelSize(self.ft.pixelSize() - 1)
+			while br.width() < w:
+				self.ft.setPixelSize(self.ft.pixelSize() + 1)
+				br = QFontMetrics(self.ft).boundingRect(QString(self.text))
+			while br.width() >= w and self.ft.pixelSize() >= 2:
+				self.ft.setPixelSize(self.ft.pixelSize() - 1)
+				br = QFontMetrics(self.ft).boundingRect(QString(self.text))
+			print 'pixelsize', self.ft.pixelSize()
+			self.setMinimumHeight(br.height() + self.size().height() - h)
+			self.setMaximumHeight(br.height() + self.size().height() - h)
+			self.setMinimumWidth(self.size().width() - w + 8)
+			self.setMaximumWidth(16777215)
+		elif self.formFactor() == Plasma.Horizontal:
 			br = QFontMetrics(self.ft).boundingRect(QString(self.text))
+			while br.height() < h:
+				self.ft.setPixelSize(self.ft.pixelSize() + 1)
+				br = QFontMetrics(self.ft).boundingRect(QString(self.text))
+			while br.height() >= h and self.ft.pixelSize() >= 2:
+				self.ft.setPixelSize(self.ft.pixelSize() - 1)
+				br = QFontMetrics(self.ft).boundingRect(QString(self.text))
+			print 'pixelsize', self.ft.pixelSize()
+			self.setMinimumWidth(br.width() + self.size().width() - w)
+			self.setMaximumWidth(br.width() + self.size().width() - w)
+			self.setMinimumHeight(self.size().height() - h + 8)
+			self.setMaximumHeight(16777215)
+		else:
+			self.ft.setPixelSize(h)
+			br = QFontMetrics(self.ft).boundingRect(QString(self.text))
+			while br.width() < w and br.height() < h:
+				self.ft.setPixelSize(self.ft.pixelSize() + 1)
+				br = QFontMetrics(self.ft).boundingRect(QString(self.text))
+			while self.ft.pixelSize() >= 2 and (br.width() > w or br.height() > h):
+				self.ft.setPixelSize(self.ft.pixelSize() - 1)
+				br = QFontMetrics(self.ft).boundingRect(QString(self.text))
+			print 'pixelsize', self.ft.pixelSize()
+			self.setMinimumSize(self.size().width() - w + 8, self.size().height() - h + 8)
+			self.setMaximumSize(16777215, 16777215)
 
 def CreateApplet(p):
 	return CpuFreqDisplay(p)
