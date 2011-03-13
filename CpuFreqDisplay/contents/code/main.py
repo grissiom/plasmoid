@@ -77,18 +77,13 @@ class CpuFreqDisplay(plasmascript.Applet):
         #        if con & (Plasma.SizeConstraint | Plasma.StartupCompletedConstraint):
 
         def update_font(self, w, h):
-                print 'qwer', 'w', w, 'h', h
-                print self.size().width(), self.size().height()
-                print self.boundingRect().width(), self.boundingRect().height()
-                print self.applet.size().width()
                 br = QFontMetrics(self.ft).boundingRect(QString(self.text))
+                self.ft.setPixelSize(1)
                 while br.width() < w and br.height() < h:
                         self.ft.setPixelSize(self.ft.pixelSize() + 1)
-                        print self.ft.pixelSize()
                         br = QFontMetrics(self.ft).boundingRect(QString(self.text))
-                while br.width() > w or br.height() > h:
+                while self.ft.pixelSize() >= 2 and br.width() > w or br.height() > h:
                         self.ft.setPixelSize(self.ft.pixelSize() - 1)
-                        print self.ft.pixelSize()
                         br = QFontMetrics(self.ft).boundingRect(QString(self.text))
 
 def CreateApplet(p):
