@@ -24,8 +24,8 @@ class CpuFreqDisplay(plasmascript.Applet):
 
 		self.ft = self.font()
 		self.ft.setPixelSize(30)
-                self.width = 0
-                self.height = 0
+		self.width = 0
+		self.height = 0
 
 		# from plasmaengineexplorer, solidservice seems not working on
 		# my box. So I cannot use DataEngin here...
@@ -48,16 +48,16 @@ class CpuFreqDisplay(plasmascript.Applet):
 		f.close()
 		if self.cfreq != cfreq:
 			self.cfreq = cfreq
-                        if self.cfreq == self.afreq[0]:
-                                self.color = Qt.green
-                        elif self.cfreq == self.afreq[-1]:
-                                self.color = Qt.red
-                        else:
-                                self.color = Qt.yellow
-                        if self.cfreq > 1000000:
-                                self.text = "%.2fGHz" % (self.cfreq / 1000000.0)
-                        else:
-                                self.text = "%.2fMHz" % (self.cfreq / 1000.0)
+			if self.cfreq == self.afreq[0]:
+				self.color = Qt.green
+			elif self.cfreq == self.afreq[-1]:
+				self.color = Qt.red
+			else:
+				self.color = Qt.yellow
+			if self.cfreq > 1000000:
+				self.text = "%.2fGHz" % (self.cfreq / 1000000.0)
+			else:
+				self.text = "%.2fMHz" % (self.cfreq / 1000.0)
 			self.update()
 
 	def timerEvent(self, event):
@@ -65,26 +65,26 @@ class CpuFreqDisplay(plasmascript.Applet):
 
 	def paintInterface(self, p, option, rect):
 		p.save()
-                if self.width != rect.width() or self.height != rect.height():
-                        self.update_font(rect.width(), rect.height())
-                        self.width, self.height = rect.width(), rect.height()
+		if self.width != rect.width() or self.height != rect.height():
+			self.update_font(rect.width(), rect.height())
+			self.width, self.height = rect.width(), rect.height()
 		p.setFont(self.ft)
 		p.setPen(self.color)
 		p.drawText(rect, Qt.AlignHCenter, self.text)
 		p.restore()
 
-        #def constraintsEvent(self, con):
-        #        if con & (Plasma.SizeConstraint | Plasma.StartupCompletedConstraint):
+	#def constraintsEvent(self, con):
+	#        if con & (Plasma.SizeConstraint | Plasma.StartupCompletedConstraint):
 
-        def update_font(self, w, h):
-                br = QFontMetrics(self.ft).boundingRect(QString(self.text))
-                self.ft.setPixelSize(1)
-                while br.width() < w and br.height() < h:
-                        self.ft.setPixelSize(self.ft.pixelSize() + 1)
-                        br = QFontMetrics(self.ft).boundingRect(QString(self.text))
-                while self.ft.pixelSize() >= 2 and br.width() > w or br.height() > h:
-                        self.ft.setPixelSize(self.ft.pixelSize() - 1)
-                        br = QFontMetrics(self.ft).boundingRect(QString(self.text))
+	def update_font(self, w, h):
+		br = QFontMetrics(self.ft).boundingRect(QString(self.text))
+		self.ft.setPixelSize(1)
+		while br.width() < w and br.height() < h:
+			self.ft.setPixelSize(self.ft.pixelSize() + 1)
+			br = QFontMetrics(self.ft).boundingRect(QString(self.text))
+		while self.ft.pixelSize() >= 2 and br.width() > w or br.height() > h:
+			self.ft.setPixelSize(self.ft.pixelSize() - 1)
+			br = QFontMetrics(self.ft).boundingRect(QString(self.text))
 
 def CreateApplet(p):
 	return CpuFreqDisplay(p)
